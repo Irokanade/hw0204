@@ -18,9 +18,9 @@ void initializeBigNum(sBigNum *pNum) {
 
 int checkNonDig(char *str) {
     
-    if(*str == '0' || *(str+1) == '0') {
+    /*if(*str == '0' || *(str+1) == '0') {
         return 0; //first digit cannot be 0
-    }
+    }*/
     
     for(const char *i = str; *i != 0; i++) {
         if(*i == 45) {
@@ -34,7 +34,7 @@ int checkNonDig(char *str) {
     return 1; //true
 }
 
-void rvereseArray(char arr[], int start, int end) {
+void revereseArray(char arr[], int start, int end) {
     char temp;
     while (start < end) {
         temp = arr[start];
@@ -73,6 +73,27 @@ int addNegative(sBigNum *num) {
     }
     
     return 1;
+}
+
+void removeFrontZero(sBigNum *num) {
+    int offset = 0;
+    
+    
+    if(num->signbit != -1) {
+        char *i = num->num;
+        if(*i != '0') {
+            return; //nothing to do
+        }
+        
+        for(i = num->num; *i == '0'; i++) {
+            offset++;
+        }
+        for(size_t i = 0; i < num->lastDigit+offset; i++) {
+            num->num[i] = num->num[i+offset];
+        }
+        num->lastDigit = strlen(num->num);
+    }
+    
 }
 
 void positiveAdd(sBigNum *pResult, sBigNum num01, sBigNum num02) {
@@ -159,6 +180,7 @@ void positiveAdd(sBigNum *pResult, sBigNum num01, sBigNum num02) {
         i++;
     }
     pResult->lastDigit = strlen(pResult->num);
+    removeFrontZero(pResult);
     //printf("pResult->num: %s\n", pResult->num);
 }
 
@@ -227,6 +249,7 @@ int positiveSubtraction(sBigNum *pResult, sBigNum num01, sBigNum num02) {
         i++;
     }
     pResult->lastDigit = strlen(pResult->num);
+    removeFrontZero(pResult);
     
     return 1;
 }
@@ -461,7 +484,7 @@ void multiply( sBigNum *pResult , const sBigNum num01 , const
     }
     
     pResult->lastDigit = strlen(pResult->num);
-    rvereseArray(pResult->num, 0, (int)pResult->lastDigit-1);
+    revereseArray(pResult->num, 0, (int)pResult->lastDigit-1);
     int resultSign = num01.signbit*num02.signbit;
     if(resultSign == -1) {
         addNegative(pResult);
@@ -469,6 +492,7 @@ void multiply( sBigNum *pResult , const sBigNum num01 , const
     //printf("lastDigit: %ld\n", pResult->lastDigit);
 }
 
+//num01 divided by num02
 void divide( sBigNum *pQuotient , sBigNum *pRemainder , const
             sBigNum num01 , const sBigNum num02 ) {
     initializeBigNum(pQuotient);
@@ -477,19 +501,22 @@ void divide( sBigNum *pQuotient , sBigNum *pRemainder , const
     sBigNum num02Copy = num02;
     removeNegative(&num01Copy);
     removeNegative(&num02Copy);
+    const sBigNum BIGNUM_ONE = {"1", 1, 1};
     
-    
-   //num01 divided by num02
-    for(int i = (int)num01Copy.lastDigit-1; i >= 0; i--) {
-        int int1 = num01Copy.num[i]-'0';
-        
-        for(int j = (int)num02Copy.lastDigit-1; j >= 0;j--) {
-            int int2 = num02Copy.num[j]-'0';
-            
-            while(int1 >= int2) {
-                int1 -= int2;
-            }
-            
-        }
+    *pRemainder = num01Copy;
+    while(compare(*pRemainder, num02Copy) >= 0) {
+        subtract(pRemainder, *pRemainder, num02Copy);
+        add(pQuotient, *pQuotient, BIGNUM_ONE);
+        printf("pRemainder: %s\n", pRemainder->num);
+        printf("pQuotient: %s\n", pQuotient->num);
+        /*sBigNum temp = *pRemainder;
+        sBigNum quotientTemp = *pQuotient;
+        subtract(pRemainder, temp, num02Copy);
+        printf("pRemainder: ");
+        print(*pRemainder);
+        printf("\n");
+        temp = *pRemainder;
+        add(pQuotient, quotientTemp, BIGNUM_ONE);*/
     }
+
 }

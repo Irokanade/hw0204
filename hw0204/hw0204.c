@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include "bignum.h"
+#include <string.h>
 
 int main() {
     printf("sizeof long double: %ld\n", sizeof(long double));
@@ -16,7 +17,7 @@ int main() {
     sBigNum result;
     
     set(&bignum1, "9955555");
-    set(&bignum2, "771166");
+    set(&bignum2, "71166");
     
     printf("bignum1: ");
     print(bignum1);
@@ -45,5 +46,33 @@ int main() {
     print(result);
     printf("\n");
     
+    sBigNum quotient;
+    sBigNum remainder;
+    
+    printf("divide\n");
+    divide(&quotient, &remainder, bignum1, bignum2);
+    printf("remainder\n");
+    print(remainder);
+    printf("\n");
+    printf("quotient\n");
+    print(quotient);
+    printf("\n");
+    
+    sBigNum test;
+    test.num[0] = '0';
+    test.num[1] = '0';
+    test.num[2] = '0';
+    test.num[3] = '0';
+    test.num[4] = '1';
+    test.num[5] = '2';
+    test.num[6] = '3';
+    test.lastDigit = strlen(test.num);
+    printf("test\n");
+    print(test);
+    printf("\n");
+    removeFrontZero(&test);
+    printf("test\n");
+    print(test);
+    printf("\n");
     return 0;
 }

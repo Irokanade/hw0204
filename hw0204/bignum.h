@@ -20,8 +20,9 @@ typedef struct _sBigNum {
 
 void initializeBigNum(sBigNum *pNum);
 int checkNonDig(char *str);
-void rvereseArray(char arr[], int start, int end);
+void revereseArray(char arr[], int start, int end);
 int removeNegative(sBigNum *num);
+void removeFrontZero(sBigNum *num);
 int addNegative(sBigNum *num);
 void positiveAdd( sBigNum *pResult ,const sBigNum num01 , const sBigNum
                  num02 ); // both num01 and num02 must be positive
