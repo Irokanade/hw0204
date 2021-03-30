@@ -283,7 +283,7 @@ int factorialBigNum(sBigNum *pResult, const sBigNum num) {
 }
 
 void print( const sBigNum num ) {
-    printf("%s", num.num);
+    printf("%s\n", num.num);
 }
 
 int32_t set( sBigNum *pNum, char *str ) {
@@ -319,6 +319,12 @@ int32_t compare( const sBigNum num01 , const sBigNum num02 ) {
             equal to Num02, return 0; If Num01 is less than Num02, return -1.
     */
     
+    sBigNum num01Copy = num01;
+    sBigNum num02Copy = num02;
+    //remove the leading zeros else set to zero
+    removeFrontZero(&num01Copy);
+    removeFrontZero(&num02Copy);
+    
     if(num01.signbit > num02.signbit) {
         return 1;
     } else if(num01.signbit < num02.signbit) {
@@ -332,16 +338,16 @@ int32_t compare( const sBigNum num01 , const sBigNum num02 ) {
     //else they are the same number of character
     char *pNum1 = NULL;
     char *pNum2 = NULL;
-    if(num01.signbit == -1) {
-        pNum1 = num01.num  - 1;
+    if(num01Copy.signbit == -1) {
+        pNum1 = num01Copy.num  - 1;
     } else {
-        pNum1 = num01.num;
+        pNum1 = num01Copy.num;
     }
     
     if(num02.signbit == -1) {
-        pNum2 = num02.num -1;
+        pNum2 = num02Copy.num -1;
     } else {
-        pNum2 = num02.num;
+        pNum2 = num02Copy.num;
     }
     
     for(size_t i = 0; i < MAXDIGITS; i++) {
@@ -526,6 +532,11 @@ void multiply( sBigNum *pResult , const sBigNum num01 , const
 //num01 divided by num02
 void divide( sBigNum *pQuotient , sBigNum *pRemainder , const
             sBigNum num01 , const sBigNum num02 ) {
+    if(num02.num[0] == '0') {
+        //can't divide by zero
+        return;
+    }
+    
     initializeBigNum(pQuotient);
     initializeBigNum(pRemainder);
     sBigNum num01Copy = num01;
@@ -556,6 +567,10 @@ void divide( sBigNum *pQuotient , sBigNum *pRemainder , const
     pQuotient->lastDigit = strlen(pQuotient->num);
     removeFrontZero(pRemainder);
     removeFrontZero(pQuotient);
+    int resultSign = num01.signbit*num02.signbit;
+    if(resultSign == -1) {
+        addNegative(pQuotient);
+    }
 
 }
 
