@@ -94,6 +94,12 @@ void removeFrontZero(sBigNum *num) {
         num->lastDigit = strlen(num->num);
     }
     
+    //if zero set zero
+    if(num->num[0] == 0) {
+        num->num[0] = '0';
+        num->lastDigit = strlen(num->num);
+    }
+    
 }
 
 void positiveAdd(sBigNum *pResult, sBigNum num01, sBigNum num02) {
@@ -238,7 +244,12 @@ int positiveSubtraction(sBigNum *pResult, sBigNum num01, sBigNum num02) {
     while(num01.num[i] != 0) {
         int substract;
         substract = num01.num[num01.lastDigit-1-i]-'0'-carry;
-        carry = 0;
+        if(substract < 0) {
+            substract += 10;
+            carry = 1;
+        } else {
+            carry = 0;
+        }
         char temp[2] = {0};
         temp[0] = substract+'0';
         char *pResultTemp = strdup(pResult->num);
@@ -248,6 +259,23 @@ int positiveSubtraction(sBigNum *pResult, sBigNum num01, sBigNum num02) {
         free(pResultTemp);
         i++;
     }
+    pResult->lastDigit = strlen(pResult->num);
+    removeFrontZero(pResult);
+    
+    return 1;
+}
+
+int factorialBigNum(sBigNum *pResult, const sBigNum num) {
+    sBigNum i;
+    sBigNum one;
+    set(pResult, "1");
+    set(&i, "1");
+    set(&one,"1");
+    while(compare(i, num) <= 0) {
+        multiply(pResult, *pResult, i);
+        add(&i, i, one);
+    }
+    
     pResult->lastDigit = strlen(pResult->num);
     removeFrontZero(pResult);
     
@@ -485,10 +513,13 @@ void multiply( sBigNum *pResult , const sBigNum num01 , const
     
     pResult->lastDigit = strlen(pResult->num);
     revereseArray(pResult->num, 0, (int)pResult->lastDigit-1);
+    removeFrontZero(pResult);
     int resultSign = num01.signbit*num02.signbit;
     if(resultSign == -1) {
         addNegative(pResult);
     }
+    
+    
     //printf("lastDigit: %ld\n", pResult->lastDigit);
 }
 
@@ -507,8 +538,10 @@ void divide( sBigNum *pQuotient , sBigNum *pRemainder , const
     while(compare(*pRemainder, num02Copy) >= 0) {
         subtract(pRemainder, *pRemainder, num02Copy);
         add(pQuotient, *pQuotient, BIGNUM_ONE);
-        printf("pRemainder: %s\n", pRemainder->num);
-        printf("pQuotient: %s\n", pQuotient->num);
+        //printf("pRemainder: %s\n", pRemainder->num);
+        //printf("pQuotient: %s\n", pQuotient->num);
+        
+        
         /*sBigNum temp = *pRemainder;
         sBigNum quotientTemp = *pQuotient;
         subtract(pRemainder, temp, num02Copy);
@@ -518,5 +551,54 @@ void divide( sBigNum *pQuotient , sBigNum *pRemainder , const
         temp = *pRemainder;
         add(pQuotient, quotientTemp, BIGNUM_ONE);*/
     }
+    
+    pRemainder->lastDigit = strlen(pRemainder->num);
+    pQuotient->lastDigit = strlen(pQuotient->num);
+    removeFrontZero(pRemainder);
+    removeFrontZero(pQuotient);
 
+}
+
+int32_t power( sBigNum *pResult , int32_t n, int32_t k ) {
+    initializeBigNum(pResult);
+    sBigNum num1;
+    char n_string[MAXDIGITS];
+    sprintf(n_string, "%d", n);
+    set(&num1, n_string);
+    
+    *pResult = num1;
+    for(size_t i = 0; i < k-1; i++) {
+        multiply(pResult, *pResult, num1);
+    }
+    
+    pResult->lastDigit = strlen(pResult->num);
+    removeFrontZero(pResult);
+    
+    return 1;
+}
+
+int32_t combine( sBigNum *pResult , int32_t n, int32_t k ) {
+    sBigNum numerator;
+    sBigNum denom;
+    sBigNum nBig;
+    sBigNum kBig;
+    sBigNum kFac;
+    sBigNum nMinuskFac;
+    sBigNum remainder;
+    char nStr[MAXDIGITS];
+    char kStr[MAXDIGITS];
+    sprintf(nStr, "%d", n);
+    sprintf(kStr, "%d", k);
+    set(&nBig, nStr);
+    set(&kBig, kStr);
+    factorialBigNum(&numerator, nBig);
+    factorialBigNum(&kFac, kBig);
+    subtract(&nMinuskFac, nBig, kBig);
+    factorialBigNum(&nMinuskFac, nMinuskFac);
+    multiply(&denom, kFac, nMinuskFac);
+    divide(pResult, &remainder, numerator, denom);
+    
+    pResult->lastDigit = strlen(pResult->num);
+    removeFrontZero(pResult);
+    return 1;
 }

@@ -22,12 +22,13 @@ void initializeBigNum(sBigNum *pNum);
 int checkNonDig(char *str);
 void revereseArray(char arr[], int start, int end);
 int removeNegative(sBigNum *num);
-void removeFrontZero(sBigNum *num);
 int addNegative(sBigNum *num);
+void removeFrontZero(sBigNum *num);
 void positiveAdd( sBigNum *pResult ,const sBigNum num01 , const sBigNum
                  num02 ); // both num01 and num02 must be positive
 int positiveSubtraction(sBigNum *pResult , const sBigNum num01 , const
                          sBigNum num02); //both num01 and num02 must be positive
+int factorialBigNum(sBigNum *pResult, const sBigNum num);
 void print( const sBigNum num );
 
 int32_t set( sBigNum *pNum, char *str );

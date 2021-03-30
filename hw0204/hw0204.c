@@ -74,5 +74,23 @@ int main() {
     printf("test\n");
     print(test);
     printf("\n");
+    
+    power(&result, 5, 3);
+    printf("power\n");
+    print(result);
+    printf("\n");
+    
+    sBigNum five;
+    set(&five, "5");
+    factorialBigNum(&result, five);
+    printf("factorial\n");
+    print(result);
+    printf("\n");
+    
+    printf("combination\n");
+    combine(&result, 20, 10);
+    print(result);
+    printf("\n");
+    
     return 0;
 }
